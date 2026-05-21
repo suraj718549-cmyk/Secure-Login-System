@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}2FA Verification — Secure Login System{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="shield-icon pulse">🔐</div>
+            <h1 class="auth-title">2FA VERIFICATION</h1>
+            <p class="auth-subtitle">Enter your 6-digit authenticator code</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('auth.verify_2fa') }}" class="auth-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            <div class="form-group-cyber">
+                <label for="totp_code">Authentication Code</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">#</span>
+                    <input type="text" id="totp_code" name="totp_code"
+                           class="form-control-cyber text-center"
+                           placeholder="000000" maxlength="6" pattern="[0-9]{6}"
+                           required autocomplete="one-time-code" inputmode="numeric">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-cyber-primary w-100">VERIFY</button>
+        </form>
+
+        <div class="auth-links">
+            <a href="{{ url_for('auth.login') }}">Back to login</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

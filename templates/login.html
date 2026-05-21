@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Login — Secure Login System{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card loading-glow">
+        <div class="auth-header">
+            <div class="shield-icon pulse">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M12 2L4 6v6c0 5.5 3.8 10.7 8 12 4.2-1.3 8-6.5 8-12V6l-8-4z"/>
+                    <path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h1 class="auth-title">SECURE ACCESS</h1>
+            <p class="auth-subtitle">Authentication Portal — SOC Level 3</p>
+        </div>
+
+        <div class="terminal-line">
+            <span class="prompt">root@securelogin:~$</span> authenticate --user
+        </div>
+
+        <form method="POST" action="{{ url_for('auth.login') }}" class="auth-form" novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            <div class="form-group-cyber">
+                <label for="username">Username</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">▸</span>
+                    <input type="text" id="username" name="username"
+                           class="form-control-cyber" placeholder="Enter username"
+                           required autocomplete="username" maxlength="20">
+                </div>
+            </div>
+
+            <div class="form-group-cyber">
+                <label for="password">Password</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">▸</span>
+                    <input type="password" id="password" name="password"
+                           class="form-control-cyber" placeholder="Enter password"
+                           required autocomplete="current-password">
+                    <button type="button" class="toggle-password" data-target="password"
+                            aria-label="Toggle password visibility">👁</button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-cyber-primary w-100" id="login-btn">
+                <span class="btn-text">AUTHENTICATE</span>
+                <span class="btn-loader hidden">
+                    <span class="loader-dot"></span>
+                    <span class="loader-dot"></span>
+                    <span class="loader-dot"></span>
+                </span>
+            </button>
+        </form>
+
+        <div class="auth-links">
+            <a href="{{ url_for('auth.forgot_password') }}">Forgot password?</a>
+            <span class="divider">|</span>
+            <a href="{{ url_for('auth.register') }}">Create account</a>
+        </div>
+
+        <div class="security-badges">
+            <span class="badge-cyber">bcrypt</span>
+            <span class="badge-cyber">CSRF</span>
+            <span class="badge-cyber">SQL Safe</span>
+            <span class="badge-cyber">2FA Ready</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

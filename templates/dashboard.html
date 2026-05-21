@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Secure Login System{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">
+            <span class="text-accent">◈</span> SECURITY DASHBOARD
+        </h1>
+        <p class="dashboard-subtitle text-mono">
+            Operator: {{ user.username }} | Session Active | Encrypted Channel
+        </p>
+    </div>
+
+    <!-- Stats cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="stat-icon success">✓</div>
+                <div class="stat-value">{{ stats.total_logins }}</div>
+                <div class="stat-label">Successful Logins</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="stat-icon {% if stats.failed_attempts > 0 %}warning{% else %}neutral{% endif %}">
+                    {{ stats.failed_attempts }}
+                </div>
+                <div class="stat-value">{{ stats.failed_attempts }}</div>
+                <div class="stat-label">Failed Attempts</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="stat-icon {% if stats.totp_enabled %}success{% else %}warning{% endif %}">
+                    {% if stats.totp_enabled %}ON{% else %}OFF{% endif %}
+                </div>
+                <div class="stat-value">2FA</div>
+                <div class="stat-label">Two-Factor Auth</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="stat-icon neutral">⏱</div>
+                <div class="stat-value stat-small">{{ stats.last_login[:16] if stats.last_login != 'Never' else 'Never' }}</div>
+                <div class="stat-label">Last Login</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Profile panel -->
+        <div class="col-lg-4">
+            <div class="panel-card">
+                <h3 class="panel-title">Operator Profile</h3>
+                <ul class="profile-list">
+                    <li><span class="label">Username</span><span class="value">{{ user.username }}</span></li>
+                    <li><span class="label">Email</span><span class="value">{{ user.email }}</span></li>
+                    <li><span class="label">Member Since</span><span class="value">{{ stats.member_since }}</span></li>
+                    <li><span class="label">Role</span>
+                        <span class="value">
+                            {% if user.is_admin %}<span class="tag-admin">ADMIN</span>{% else %}Operator{% endif %}
+                        </span>
+                    </li>
+                    <li><span class="label">2FA Status</span>
+                        <span class="value">
+                            {% if stats.totp_enabled %}
+                            <span class="tag-success">ENABLED</span>
+                            {% else %}
+                            <span class="tag-warning">DISABLED</span>
+                            {% endif %}
+                        </span>
+                    </li>
+                </ul>
+                <div class="panel-actions">
+                    {% if not stats.totp_enabled %}
+                    <a href="{{ url_for('auth.setup_2fa') }}" class="btn btn-cyber-outline btn-sm">Enable 2FA</a>
+                    {% endif %}
+                    <a href="{{ url_for('main.change_password') }}" class="btn btn-cyber-outline btn-sm">Change Password</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity logs -->
+        <div class="col-lg-8">
+            <div class="panel-card">
+                <h3 class="panel-title">
+                    <span class="blink">●</span> Activity Log
+                </h3>
+                <div class="table-responsive">
+                    <table class="table table-cyber">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Action</th>
+                                <th>Status</th>
+                                <th>IP</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in logs %}
+                            <tr>
+                                <td class="text-mono">{{ log.created_at[:19] }}</td>
+                                <td><span class="action-tag">{{ log.action }}</span></td>
+                                <td>
+                                    <span class="status-badge status-{{ log.status|lower }}">
+                                        {{ log.status }}
+                                    </span>
+                                </td>
+                                <td class="text-mono">{{ log.ip_address or '—' }}</td>
+                                <td>{{ log.details or '—' }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">No activity recorded yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

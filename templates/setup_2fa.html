@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Setup 2FA — Secure Login System{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card" style="max-width: 520px;">
+        <div class="auth-header">
+            <h1 class="auth-title">ENABLE 2FA</h1>
+            <p class="auth-subtitle">Scan with Google Authenticator or similar app</p>
+        </div>
+
+        <div class="qr-section text-center mb-4">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data={{ provisioning_uri | urlencode }}"
+                 alt="2FA QR Code" class="qr-code">
+            <p class="text-mono mt-3 secret-display">
+                Manual key: <code>{{ secret }}</code>
+            </p>
+        </div>
+
+        <form method="POST" action="{{ url_for('auth.setup_2fa') }}" class="auth-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            <div class="form-group-cyber">
+                <label for="totp_code">Enter code from app to confirm</label>
+                <input type="text" id="totp_code" name="totp_code"
+                       class="form-control-cyber text-center"
+                       placeholder="000000" maxlength="6" required>
+            </div>
+
+            <button type="submit" class="btn btn-cyber-primary w-100">ACTIVATE 2FA</button>
+        </form>
+
+        <div class="auth-links mt-3">
+            <a href="{{ url_for('main.dashboard') }}">Skip for now</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

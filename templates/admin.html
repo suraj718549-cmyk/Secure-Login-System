@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Admin SOC — Secure Login System{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">
+            <span class="text-danger">◈</span> ADMIN SOC PANEL
+        </h1>
+        <p class="dashboard-subtitle text-mono">Security Operations Center — Full System Monitor</p>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card admin-stat">
+                <div class="stat-value">{{ stats.total_users }}</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card admin-stat">
+                <div class="stat-value">{{ stats.admin_users }}</div>
+                <div class="stat-label">Administrators</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card admin-stat">
+                <div class="stat-value">{{ stats.users_with_2fa }}</div>
+                <div class="stat-label">2FA Enabled</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card admin-stat danger-stat">
+                <div class="stat-value">{{ stats.recent_failures }}</div>
+                <div class="stat-label">Recent Failures</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <div class="panel-card">
+                <h3 class="panel-title">Registered Users</h3>
+                <div class="table-responsive">
+                    <table class="table table-cyber table-sm">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>2FA</th>
+                                <th>Failed</th>
+                                <th>Last Login</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for u in users %}
+                            <tr>
+                                <td>
+                                    {{ u.username }}
+                                    {% if u.is_admin %}<span class="tag-admin">ADM</span>{% endif %}
+                                </td>
+                                <td>{% if u.totp_enabled %}✓{% else %}—{% endif %}</td>
+                                <td>{{ u.failed_attempts or 0 }}</td>
+                                <td class="text-mono">{{ (u.last_login or 'Never')[:16] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="panel-card">
+                <h3 class="panel-title"><span class="blink">●</span> System Activity Log</h3>
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-cyber table-sm">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>Status</th>
+                                <th>IP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in logs %}
+                            <tr>
+                                <td class="text-mono">{{ log.created_at[:19] }}</td>
+                                <td>{{ log.username or '—' }}</td>
+                                <td><span class="action-tag">{{ log.action }}</span></td>
+                                <td>
+                                    <span class="status-badge status-{{ log.status|lower }}">
+                                        {{ log.status }}
+                                    </span>
+                                </td>
+                                <td class="text-mono">{{ log.ip_address or '—' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
